@@ -44,10 +44,23 @@ fd2, hog_image2 = hog(image2, orientations=8, pixels_per_cell=(16, 16),
 # Rescale histogram for better display
 hog_image_rescaled2 = np.array(exposure.rescale_intensity(hog_image2, in_range=(0, 10)))
 
-# TODO: faire l'algo de cost_volume basé sur descripteur + adapter sgm pour prendre nos cost volumes
+def compute_costs(img_left, img_right):
 
-#  --left [LEFT IMAGE NAME] --right [RIGHT IMAGE NAME] --left_gt [LEFT GT IMAGE NAME] --right_gt [RIGHT GT IMAGE NAME] --output [OUTPUT IMAGE NAME] --disp [MAXIMUM DISPARITY] --images [TRUE OR FALSE] --eval [TRUE OR FALSE]
-script = "semi_global_matching/sgm.py  --left %s --right %s --disp 64 --images False --eval False" % (img1_name, img2_name)
-os.system("bash -c '%s'" % script)
+    cost_volume = np.zeros((img_left.shape[0], img_left.shape[1], img_left.shape[1]))
+    for d in range(img_left.shape[1]):
+        cost_volume[:,:d, d] = img_left[:, :d]
+        cost_volume[:,d:,d] = img_left[:, d:] - img_right[:, d:]
+    return cost_volume
+
+cost_volume = compute_costs(hog_image_rescaled1, hog_image_rescaled2)
+
+# TODO: adapter sgm pour prendre nos cost volumes
+
+def test_sgm(img1_name, img2_name):
+    #  --left [LEFT IMAGE NAME] --right [RIGHT IMAGE NAME] --left_gt [LEFT GT IMAGE NAME] --right_gt [RIGHT GT IMAGE NAME] --output [OUTPUT IMAGE NAME] --disp [MAXIMUM DISPARITY] --images [TRUE OR FALSE] --eval [TRUE OR FALSE]
+    script = "semi_global_matching/sgm.py  --left %s --right %s --disp 64 --images False --eval False" % (img1_name, img2_name)
+    os.system("bash -c '%s'" % script)
+
+
 
 
