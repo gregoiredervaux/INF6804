@@ -3,7 +3,6 @@ import numpy as np
 
 import sgm
 import distances
-
 def get_recall(disparity, gt, max_disp):
     """
     computes the recall of the disparity map.
@@ -35,7 +34,7 @@ def experiments():
     max_disp = 64
 
     disparity_map = sgm.sgm(left, right, descriptor, distance, descriptor_size, num_elements, num_orientation, max_disp)
-    cv2.imwrite('left_disp_map.png', disparity_map)
+    cv2.imwrite('left_disp_map_' + descriptor + '.png', disparity_map)
 
     print('\nEvaluating left disparity map...')
     recall = get_recall(disparity_map, gt_name, max_disp)
